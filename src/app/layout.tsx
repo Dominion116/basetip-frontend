@@ -6,7 +6,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiProvider } from 'wagmi'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { config } from '@/lib/wagmi'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import ErrorBoundary from '@/components/ErrorBoundary'
 
 export default function RootLayout({
   children,
@@ -15,12 +16,32 @@ export default function RootLayout({
 }) {
   const [queryClient] = useState(() => new QueryClient())
 
+  // Suppress Coinbase Wallet telemetry errors
+  useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args) => {
+      if (
+        typeof args[0] === 'string' && 
+        (args[0].includes('Failed to load telemetry script') || 
+         args[0].includes('Coinbase Wallet SDK'))
+      ) {
+        return; // Suppress these specific errors
+      }
+      originalError.apply(console, args);
+    };
+    
+    return () => {
+      console.error = originalError;
+    };
+  }, [])
+
   return (
     <html lang="en">
       <body>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <RainbowKitProvider>
+        <ErrorBoundary>
+          <WagmiProvider config={config}>
+            <QueryClientProvider client={queryClient}>
+              <RainbowKitProvider>
               <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
                 <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
                   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,6 +62,7 @@ export default function RootLayout({
             </RainbowKitProvider>
           </QueryClientProvider>
         </WagmiProvider>
+        </ErrorBoundary>
       </body>
     </html>
   )

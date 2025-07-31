@@ -37,15 +37,18 @@ export default function TipContent() {
     
     try {
       setLoading(true)
-      await writeContract({
+      const result = await writeContract({
         address: BASETIP_CONTRACT_ADDRESS,
         abi: BASETIP_ABI,
         functionName: 'tipContent',
         args: [contentId],
         value: parseEther(tipAmount),
       })
+      // Handle success if needed
+      console.log('Tip transaction submitted:', result)
     } catch (err) {
       console.error('Tip failed:', err)
+      // Error is already handled by wagmi error state
     } finally {
       setLoading(false)
     }
