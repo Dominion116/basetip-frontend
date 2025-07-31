@@ -27,14 +27,17 @@ export default function RegisterContent() {
     
     try {
       setLoading(true)
-      await writeContract({
+      const result = await writeContract({
         address: BASETIP_CONTRACT_ADDRESS,
         abi: BASETIP_ABI,
         functionName: 'registerContent',
         args: [contentId],
       })
+      // Handle success if needed
+      console.log('Registration transaction submitted:', result)
     } catch (err) {
       console.error('Registration failed:', err)
+      // Error is already handled by wagmi error state
     } finally {
       setLoading(false)
     }

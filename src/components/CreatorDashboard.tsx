@@ -71,13 +71,16 @@ export default function CreatorDashboard() {
     if (!earnings || earnings === 0n) return
     
     try {
-      await writeContract({
+      const result = await writeContract({
         address: BASETIP_CONTRACT_ADDRESS,
         abi: BASETIP_ABI,
         functionName: 'withdrawEarnings',
       })
+      // Handle success if needed
+      console.log('Withdrawal transaction submitted:', result)
     } catch (err) {
       console.error('Withdrawal failed:', err)
+      // Error is already handled by wagmi error state
     }
   }
 
