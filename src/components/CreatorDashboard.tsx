@@ -31,7 +31,12 @@ export default function CreatorDashboard() {
   })
 
   // Get details for each content
-  const [contentDetails, setContentDetails] = useState<any[]>([])
+  interface ContentDetail {
+    id: string
+    totalTips: string
+    tipCount: string
+  }
+  const [contentDetails, setContentDetails] = useState<ContentDetail[]>([])
 
   useEffect(() => {
     const fetchContentDetails = async () => {
